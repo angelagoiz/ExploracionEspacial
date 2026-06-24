@@ -1,0 +1,620 @@
+@import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Syne:wght@400;500;600&display=swap");
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  background-color: #000000;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: url("https://www.transparenttextures.com/patterns/stardust.png")
+    repeat;
+  animation: starDrift 80s linear infinite;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.55;
+}
+
+@keyframes starDrift {
+  from {
+    transform: translateY(0) translateX(0);
+  }
+  to {
+    transform: translateY(-600px) translateX(-100px);
+  }
+}
+main,
+header,
+footer,
+section {
+  position: relative;
+  z-index: 1;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+body {
+  background-color: #000000;
+  background-image:
+    url("https://www.transparenttextures.com/patterns/stardust.png"),
+    radial-gradient(
+      ellipse at 20% 50%,
+      rgba(56, 189, 248, 0.04) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      ellipse at 80% 20%,
+      rgba(129, 140, 248, 0.05) 0%,
+      transparent 50%
+    );
+  color: #ffffff;
+  font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.7;
+  overflow-x: hidden;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5 {
+  font-family: "Orbitron", sans-serif;
+  letter-spacing: 1px;
+}
+
+a {
+  color: #ffffff;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+a:hover {
+  color: #38bdf8;
+}
+
+.place-card {
+  overflow: hidden;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s ease;
+  cursor: pointer;
+}
+.place-card:hover {
+  transform: translateY(-6px) scale(1.01);
+  background: rgba(129, 140, 248, 0.12);
+}
+.place-card__image-wrap {
+  width: 100%;
+  aspect-ratio: 1/1;
+  overflow: hidden;
+  background: radial-gradient(
+    circle at center,
+    rgba(56, 189, 248, 0.06),
+    transparent 70%
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 100px 20px;
+}
+.place-card__image {
+  width: 100%;
+  height: 100%;
+  -o-object-fit: contain;
+  object-fit: contain;
+  transition: transform 0.5s ease;
+}
+.place-card:hover .place-card__image {
+  transform: scale(1.08) rotate(2deg);
+}
+.place-card__body {
+  padding: 100px 20px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 100px;
+}
+.place-card__name {
+  font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: rgb(129, 141, 248);
+  margin-bottom: 100px;
+}
+.place-card__desc {
+  color: rgb(251, 252, 255);
+  font-size: 0.9rem;
+  line-height: 1.6;
+  flex: 1;
+}
+.place-card__temp {
+  margin-top: 100px;
+}
+.place-card__footer {
+  padding: 0 20px 100px;
+  margin-top: auto;
+}
+.place-card__btn {
+  width: 100%;
+  text-align: center;
+  display: block;
+}
+.place-card--hot .place-card__temp-badge {
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+.place-card--warm .place-card__temp-badge {
+  border: 1px solid rgba(249, 115, 22, 0.3);
+}
+.place-card--mild .place-card__temp-badge {
+  border: 1px solid rgba(34, 197, 94, 0.3);
+}
+.place-card--cold .place-card__temp-badge {
+  border: 1px solid rgba(56, 189, 248, 0.3);
+}
+.place-card--frozen .place-card__temp-badge {
+  border: 1px solid rgba(129, 140, 248, 0.3);
+}
+
+.place-card__temp-badge {
+  font-size: 0.72rem;
+}
+
+.fact-card {
+  height: 100%;
+  padding: 100px 20px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 100px;
+  transition:
+    background 0.3s ease,
+    border-color 0.3s ease;
+}
+.fact-card:hover {
+  background: rgba(129, 140, 248, 0.12);
+  border-color: rgba(129, 140, 248, 0.3);
+}
+.fact-card__icon {
+  font-size: 2rem;
+  display: block;
+}
+.fact-card__title {
+  font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: rgba(129, 140, 248, 0.15);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+.fact-card__text {
+  color: rgba(129, 140, 248, 0.07);
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.fact-card__temp-badge {
+  font-size: 0.72rem;
+}
+
+.card {
+  background-color: rgba(255, 255, 255, 0.7) !important;
+  border: 1px solid rgba(255, 255, 255, 0.5) !important;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+.card .card-body p {
+  color: #ffffff !important;
+}
+
+.card .card-body h5,
+.card .card-body .titulo-planeta {
+  color: #38bdf8 !important;
+}
+
+.planet-carousel {
+  border-radius: 100px;
+  overflow: hidden;
+  max-height: 380px;
+  border: 1px solid rgba(56, 189, 248, 0.12);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
+  position: relative;
+}
+.planet-carousel__item {
+  height: 380px;
+}
+.planet-carousel__item img {
+  width: 100%;
+  height: 100%;
+  -o-object-fit: cover;
+  object-fit: cover;
+  filter: brightness(0.75) saturate(1.1);
+}
+.planet-carousel__caption {
+  background: linear-gradient(transparent, rgba(2, 5, 16, 0.9));
+  padding: 100px 20px 40px;
+}
+.planet-carousel__caption h5 {
+  font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
+  font-size: 0.85rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: black;
+}
+.planet-carousel__caption p {
+  font-size: 0.875rem;
+  color: #6c757d;
+}
+.planet-carousel .carousel-control-prev,
+.planet-carousel .carousel-control-next {
+  width: 10%;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.planet-carousel:hover .carousel-control-prev,
+.planet-carousel:hover .carousel-control-next {
+  opacity: 1;
+}
+
+.planet-detail {
+  min-height: 70vh;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 100px 0;
+}
+.planet-detail__card {
+  max-width: 680px;
+  width: 100%;
+  margin: 0 auto;
+  overflow: hidden;
+  box-shadow: 0 0 20px darkblue;
+}
+.planet-detail__image-wrap {
+  width: 100%;
+  padding: 100px 20px 40px;
+  background: radial-gradient(
+    circle at center,
+    rgba(56, 189, 248, 0.08) 0%,
+    transparent 70%
+  );
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 260px;
+}
+.planet-detail__image {
+  max-width: 220px;
+  max-height: 220px;
+  -o-object-fit: contain;
+  object-fit: contain;
+  filter: drop-shadow(0 0 30px rgba(56, 189, 248, 0.3));
+  animation: floatPlanet 6s ease-in-out infinite;
+}
+.planet-detail__body {
+  padding: 100px 20px 40px;
+  text-align: center;
+}
+.planet-detail__name {
+  font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
+  font-size: clamp(1.4rem, 4vw, 2rem);
+  font-weight: 900;
+  color: black;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  margin-bottom: 100px;
+  text-shadow: 0 0 20px rgba(56, 189, 248, 0.3);
+}
+.planet-detail__temp {
+  margin-bottom: 100px;
+}
+
+.place-card {
+  overflow: hidden;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s ease;
+  cursor: pointer;
+}
+.place-card:hover {
+  transform: translateY(-6px) scale(1.01);
+  background: rgba(129, 140, 248, 0.12);
+}
+.place-card__image-wrap {
+  width: 100%;
+  aspect-ratio: 1/1;
+  overflow: hidden;
+  background: radial-gradient(
+    circle at center,
+    rgba(56, 189, 248, 0.06),
+    transparent 70%
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 100px 20px;
+}
+.place-card__image {
+  width: 100%;
+  height: 100%;
+  -o-object-fit: contain;
+  object-fit: contain;
+  transition: transform 0.5s ease;
+}
+.place-card:hover .place-card__image {
+  transform: scale(1.08) rotate(2deg);
+}
+.place-card__body {
+  padding: 100px 20px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 100px;
+}
+.place-card__name {
+  font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: rgba(129, 140, 248, 0.12);
+  margin-bottom: 100px;
+}
+.place-card__desc {
+  color: rgba(129, 140, 248, 0.07);
+  font-size: 0.9rem;
+  line-height: 1.6;
+  flex: 1;
+}
+.place-card__temp {
+  margin-top: 100px;
+}
+.place-card__footer {
+  padding: 0 20px 100px;
+  margin-top: auto;
+}
+.place-card__btn {
+  width: 100%;
+  text-align: center;
+  display: block;
+}
+.place-card--hot .place-card__temp-badge {
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+.place-card--warm .place-card__temp-badge {
+  border: 1px solid rgba(249, 115, 22, 0.3);
+}
+.place-card--mild .place-card__temp-badge {
+  border: 1px solid rgba(34, 197, 94, 0.3);
+}
+.place-card--cold .place-card__temp-badge {
+  border: 1px solid rgba(56, 189, 248, 0.3);
+}
+.place-card--frozen .place-card__temp-badge {
+  border: 1px solid rgba(129, 140, 248, 0.3);
+}
+
+.place-card__temp-badge {
+  font-size: 0.72rem;
+}
+
+.fact-card {
+  height: 100%;
+  padding: 100px 20px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 100px;
+  transition:
+    background 0.3s ease,
+    border-color 0.3s ease;
+}
+.fact-card:hover {
+  background: rgba(129, 140, 248, 0.12);
+  border-color: rgba(129, 140, 248, 0.3);
+}
+.fact-card__icon {
+  font-size: 2rem;
+  display: block;
+}
+.fact-card__title {
+  font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: rgba(129, 140, 248, 0.15);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+.fact-card__text {
+  color: rgba(129, 140, 248, 0.07);
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.fact-card__temp-badge {
+  font-size: 0.72rem;
+}
+
+.card {
+  background-color: rgba(0, 0, 0, 0.75) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+.card .card-body p {
+  color: #ffffff !important;
+  font-weight: 700;
+}
+.card .card-body h5,
+.card .card-body .titulo-planeta {
+  color: #38bdf8 !important;
+}
+
+.planet-detail {
+  min-height: 70vh;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 100px 0;
+}
+.planet-detail__card {
+  max-width: 680px;
+  width: 100%;
+  margin: 0 auto;
+  overflow: hidden;
+  box-shadow: 0 0 20px darkblue;
+}
+.planet-detail__image-wrap {
+  width: 100%;
+  padding: 100px 0;
+  background: radial-gradient(
+    circle at center,
+    rgba(56, 189, 248, 0.08) 0%,
+    transparent 70%
+  );
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 260px;
+}
+.planet-detail__image {
+  max-width: 220px;
+  max-height: 220px;
+  -o-object-fit: contain;
+  object-fit: contain;
+  filter: drop-shadow(0 0 30px rgba(56, 189, 248, 0.3));
+  animation: floatPlanet 6s ease-in-out infinite;
+}
+.planet-detail__body {
+  padding: 100px 0;
+  text-align: center;
+  padding: 100px 20px;
+}
+
+@keyframes floatPlanet {
+  0%,
+  100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-14px) rotate(1deg);
+  }
+}
+.footer {
+  background: rgba(255, 255, 255, 0.06);
+  border-top: 1px solid rgba(56, 189, 248, 0.1);
+  padding: 100px 20px;
+}
+.footer-brand {
+  font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 100px;
+}
+.footer-text {
+  color: #ffffff;
+  font-size: 0.9rem;
+  line-height: 1.8;
+}
+.footer-heading {
+  font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 100px;
+}
+.footer-link {
+  color: #ffffff;
+  font-size: 0.9rem;
+  display: block;
+  padding: 10px 0;
+  transition: all 0.3s ease;
+}
+.footer-link:hover {
+  color: #38bdf8;
+  padding-left: 10px;
+}
+.footer-divider {
+  border-color: rgba(255, 255, 255, 0.2);
+  margin: 100px 0 100px;
+}
+.footer-copy {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+footer p,
+footer li,
+footer span,
+footer h5 {
+  color: #ffffff !important;
+}
+footer a {
+  color: #ffffff !important;
+}
+footer a:hover {
+  color: #38bdf8 !important;
+}
+
+.scroll-btn {
+  font-size: 0.7rem;
+  padding: 10px 20px;
+}
+
+.temp-box {
+  font-size: 1.3rem;
+  font-weight: bold;
+  margin-top: 15px;
+  padding: 10px;
+  border-radius: 10px;
+  background: rgb(73, 55, 138);
+  color: #ffffff;
+  display: none;
+}
+.temp-box.visible {
+  display: block;
+  animation: tempReveal 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes tempReveal {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+main > section > p,
+main > .container > p {
+  color: #ffffff;
+} 
