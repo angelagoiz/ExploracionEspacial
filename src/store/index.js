@@ -19,31 +19,50 @@ const usuariosFake = [
   },
 ]
 
+// Recuperar sesión guardada en sessionStorage (se borra al cerrar la pestaña)
+function cargarSesion() {
+  try {
+    const raw = sessionStorage.getItem('sesion')
+    return raw ? JSON.parse(raw) : null
+  } catch {
+    return null
+  }
+}
+
+const sesionGuardada = cargarSesion()
+
 export default createStore({
   state: {
-    usuario: null,
-    isAuthenticated: false,
+    usuario:         sesionGuardada ?? null,
+    isAuthenticated: sesionGuardada !== null,
   },
   mutations: {
     SET_USUARIO(state, usuario) {
-      state.usuario = usuario
+      state.usuario        = usuario
       state.isAuthenticated = true
+      sessionStorage.setItem('sesion', JSON.stringify(usuario))
     },
     CERRAR_SESION(state) {
-      state.usuario = null
+      state.usuario        = null
       state.isAuthenticated = false
+      sessionStorage.removeItem('sesion')
     },
     ACTUALIZAR_UNIDAD(state, unidad) {
-      if (state.usuario) state.usuario.unidad = unidad
+      if (state.usuario) {
+        state.usuario.unidad = unidad
+        sessionStorage.setItem('sesion', JSON.stringify(state.usuario))
+      }
     },
     AGREGAR_FAVORITO(state, id) {
       if (state.usuario && !state.usuario.favoritos.includes(id)) {
         state.usuario.favoritos.push(id)
+        sessionStorage.setItem('sesion', JSON.stringify(state.usuario))
       }
     },
     ELIMINAR_FAVORITO(state, id) {
       if (state.usuario) {
         state.usuario.favoritos = state.usuario.favoritos.filter(f => f !== id)
+        sessionStorage.setItem('sesion', JSON.stringify(state.usuario))
       }
     },
   },

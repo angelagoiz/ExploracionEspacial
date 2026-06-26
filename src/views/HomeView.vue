@@ -4,8 +4,9 @@
     <!-- Intro -->
     <section class="container mt-4 text-center">
       <p>Conoce la temperatura de los planetas y nuestra estrella principal 🌞</p>
-      <p v-if="isAuthenticated" class="text-info">
-        Bienvenido, <strong>{{ usuario.nombre }}</strong> — unidad activa: <strong>°{{ unidadActiva !== 'K' ? unidadActiva : '' }}{{ unidadActiva === 'K' ? 'K' : '' }}</strong>
+      <p v-if="isAuthenticated" class="text-info mb-0">
+        Bienvenido, <strong>{{ usuario.nombre }}</strong> —
+        unidad activa: <strong>{{ unidadLabel }}</strong>
       </p>
     </section>
 
@@ -23,25 +24,26 @@
       <BuscadorPlanetas
         v-model:busqueda="busqueda"
         v-model:unidad="unidadLocal"
+        :bloquear-unidad="isAuthenticated"
       />
 
-      <!-- Sin resultados (v-if) -->
+      <!-- Sin resultados -->
       <p v-if="!cargando && lugaresFiltrados.length === 0" class="text-warning text-center mt-3">
         🪐 No se encontró ningún planeta con ese nombre.
       </p>
 
-      <!-- Spinner de carga (v-if) -->
+      <!-- Spinner -->
       <div v-if="cargando" class="text-center py-5">
         <div class="spinner-border text-info" role="status"></div>
         <p class="text-white mt-3">Cargando datos del universo…</p>
       </div>
 
-      <!-- Error (v-else-if) -->
+      <!-- Error -->
       <div v-else-if="errorCarga" class="text-center py-4">
         <p class="text-danger">⚠️ Error al cargar los datos: {{ errorCarga }}</p>
       </div>
 
-      <!-- Grilla de tarjetas (v-else + v-for) -->
+      <!-- Grilla de tarjetas -->
       <div v-else id="planetas-grid" class="row g-4">
         <div
           v-for="lugar in lugaresFiltrados"
@@ -77,24 +79,29 @@ export default {
   setup() {
     const store = useStore()
     const isAuthenticated = computed(() => store.state.isAuthenticated)
-    const usuario = computed(() => store.state.usuario)
+    const usuario         = computed(() => store.state.usuario)
     return { isAuthenticated, usuario, store }
   },
 
   data() {
     return {
-      lugares:    [],
-      cargando:   true,
-      errorCarga: null,
-      busqueda:   '',
+      lugares:     [],
+      cargando:    true,
+      errorCarga:  null,
+      busqueda:    '',
       unidadLocal: 'C',
     }
   },
 
   computed: {
-    // Si el usuario está autenticado, usa su preferencia; si no, usa el selector local
+    // Si el usuario está autenticado, prevalece su preferencia del store
     unidadActiva() {
       return this.isAuthenticated ? this.store.state.usuario.unidad : this.unidadLocal
+    },
+
+    unidadLabel() {
+      const u = this.unidadActiva
+      return u === 'C' ? 'Celsius (°C)' : u === 'F' ? 'Fahrenheit (°F)' : 'Kelvin (K)'
     },
 
     lugaresFiltrados() {

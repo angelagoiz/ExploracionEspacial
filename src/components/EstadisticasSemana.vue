@@ -92,7 +92,9 @@ export default {
 
   methods: {
     formatearTemp(t) {
-      return this.unidad === 'F' ? formatTempF(t) : formatTemp(t)
+      if (this.unidad === 'F') return formatTempF(t)
+      if (this.unidad === 'K') return `${Math.round(t + 273.15)} K`
+      return formatTemp(t)
     },
   },
 }

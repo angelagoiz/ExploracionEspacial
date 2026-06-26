@@ -216,6 +216,10 @@ export function formatTempF(t) {
   return `${f > 0 ? '+' : ''}${f} °F`
 }
 
+export function formatTempK(t) {
+  return `${Math.round(t + 273.15)} K`
+}
+
 export function calcularEstadisticas(pronostico) {
   if (!pronostico?.length) return null
   let minGlobal = pronostico[0].min

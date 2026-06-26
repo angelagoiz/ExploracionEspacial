@@ -35,5 +35,4 @@ npm run dev
 ```
 
 ## Repositorio
-
-https://github.com/tu-usuario/Clima-Mod7
+https://github.com/angelagoiz/Clima-Planetas-M7
