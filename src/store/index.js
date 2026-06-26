@@ -1,4 +1,5 @@
 import { createStore } from 'vuex'
+import { LUGARES_DATA } from '../clima.js'
 
 const usuariosFake = [
   {
@@ -19,7 +20,6 @@ const usuariosFake = [
   },
 ]
 
-// Recuperar sesión guardada en sessionStorage (se borra al cerrar la pestaña)
 function cargarSesion() {
   try {
     const raw = sessionStorage.getItem('sesion')
@@ -35,15 +35,20 @@ export default createStore({
   state: {
     usuario:         sesionGuardada ?? null,
     isAuthenticated: sesionGuardada !== null,
+    // ── NUEVO: lista de lugares y lugar seleccionado en Vuex ──
+    lugares:         LUGARES_DATA.map(d => ({ ...d, pronosticoSemanal: [...d.pronosticoSemanal] })),
+    lugarSeleccionado: null,
+    cargando:        false,
+    errorApi:        null,
   },
   mutations: {
     SET_USUARIO(state, usuario) {
-      state.usuario        = usuario
+      state.usuario         = usuario
       state.isAuthenticated = true
       sessionStorage.setItem('sesion', JSON.stringify(usuario))
     },
     CERRAR_SESION(state) {
-      state.usuario        = null
+      state.usuario         = null
       state.isAuthenticated = false
       sessionStorage.removeItem('sesion')
     },
@@ -65,6 +70,21 @@ export default createStore({
         sessionStorage.setItem('sesion', JSON.stringify(state.usuario))
       }
     },
+    SET_LUGAR_SELECCIONADO(state, lugar) {
+      state.lugarSeleccionado = lugar
+    },
+    SET_PRONOSTICO_TIERRA(state, pronostico) {
+      const tierra = state.lugares.find(l => l.id === 'tierra')
+      if (tierra) {
+        tierra.pronosticoSemanal = pronostico
+        if (pronostico.length) {
+          tierra.tempActual   = Math.round((pronostico[0].min + pronostico[0].max) / 2)
+          tierra.estadoActual = pronostico[0].estado
+        }
+      }
+    },
+    SET_CARGANDO(state, val) { state.cargando = val },
+    SET_ERROR_API(state, msg) { state.errorApi = msg },
   },
   actions: {
     login({ commit }, { email, password }) {
@@ -81,5 +101,33 @@ export default createStore({
     logout({ commit }) {
       commit('CERRAR_SESION')
     },
+    async cargarDatosTierra({ commit }) {
+      commit('SET_CARGANDO', true)
+      commit('SET_ERROR_API', null)
+      try {
+        const { ApiClient } = await import('../clima.js')
+        const pronostico = await new ApiClient().obtenerPronosticoTierra()
+        commit('SET_PRONOSTICO_TIERRA', pronostico)
+      } catch (e) {
+        commit('SET_ERROR_API', e.message)
+        // fallback
+        commit('SET_PRONOSTICO_TIERRA', [
+          { dia: 'Lunes',     min: 10, max: 22, estado: 'Soleado'  },
+          { dia: 'Martes',    min: 12, max: 24, estado: 'Soleado'  },
+          { dia: 'Miércoles', min:  8, max: 18, estado: 'Lluvioso' },
+          { dia: 'Jueves',    min:  9, max: 17, estado: 'Nublado'  },
+          { dia: 'Viernes',   min: 11, max: 20, estado: 'Soleado'  },
+          { dia: 'Sábado',    min: 13, max: 23, estado: 'Soleado'  },
+          { dia: 'Domingo',   min:  7, max: 16, estado: 'Lluvioso' },
+        ])
+      } finally {
+        commit('SET_CARGANDO', false)
+      }
+    },
+  },
+  getters: {
+    lugaresList: state => state.lugares,
+    lugarPorId: state => id => state.lugares.find(l => l.id === id) ?? null,
+    unidadActiva: state => state.usuario?.unidad ?? 'C',
   },
 })

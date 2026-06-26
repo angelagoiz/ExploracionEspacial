@@ -45,4 +45,3 @@ export default {
   emits: ['update:busqueda', 'update:unidad'],
 }
 </script>
-

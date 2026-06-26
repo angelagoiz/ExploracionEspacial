@@ -1,7 +1,6 @@
 <template>
   <main class="container mt-3 pb-5">
 
-    <!-- Breadcrumb -->
     <nav aria-label="breadcrumb">
       <ol class="breadcrumb" style="background:transparent;">
         <li class="breadcrumb-item">
@@ -13,19 +12,16 @@
       </ol>
     </nav>
 
-    <!-- Spinner -->
     <div v-if="cargando" class="text-center py-5">
       <div class="spinner-border text-info" role="status"></div>
       <p class="text-white mt-3">Cargando datos del planeta…</p>
     </div>
 
-    <!-- No encontrado -->
     <div v-else-if="!lugar" class="text-center py-5">
       <p class="text-warning">🪐 Planeta no encontrado.</p>
       <router-link to="/" class="btn btn-outline-info mt-2">⬅ Volver al inicio</router-link>
     </div>
 
-    <!-- Contenido -->
     <div v-else class="row justify-content-center">
       <div class="col-lg-8">
 
@@ -43,7 +39,6 @@
 
             <p class="text-white">{{ lugar.desc }}</p>
 
-            <!-- Selector de unidad — deshabilitado si el usuario tiene preferencia -->
             <div class="d-flex justify-content-center gap-2 mt-3">
               <button
                 @click="setUnidad('C')"
@@ -65,7 +60,6 @@
               Unidad tomada de <router-link to="/preferencias" class="text-info">tus preferencias</router-link>
             </small>
 
-            <!-- Botón temperatura -->
             <button
               v-if="!tempVisible"
               @click="tempVisible = true"
@@ -85,7 +79,6 @@
           </div>
         </div>
 
-        <!-- Pronóstico semanal -->
         <PronosticoSemanal
           :dias="lugar.pronosticoSemanal"
           :color-planeta="colorPlaneta"
@@ -93,7 +86,6 @@
           :unidad="unidadActiva"
         />
 
-        <!-- Estadísticas y alertas -->
         <EstadisticasSemana
           :stats="stats"
           :alertas="alertas"
@@ -111,9 +103,9 @@
 </template>
 
 <script>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useStore } from 'vuex'
-import { ApiClient, LUGARES_DATA, COLOR_MAP, formatTemp, formatTempF, calcularEstadisticas, generarAlertas } from '../clima.js'
+import { COLOR_MAP, formatTemp, formatTempF, formatTempK, calcularEstadisticas, generarAlertas } from '../clima.js'
 import PronosticoSemanal  from '../components/PronosticoSemanal.vue'
 import EstadisticasSemana from '../components/EstadisticasSemana.vue'
 
@@ -124,14 +116,13 @@ export default {
   setup() {
     const store = useStore()
     const isAuthenticated = computed(() => store.state.isAuthenticated)
-    const unidadStore     = computed(() => store.state.usuario?.unidad ?? 'C')
-    return { isAuthenticated, unidadStore }
+    const unidadStore     = computed(() => store.getters.unidadActiva)
+    const cargando        = computed(() => store.state.cargando)
+    return { isAuthenticated, unidadStore, cargando, store }
   },
 
   data() {
     return {
-      lugar:       null,
-      cargando:    true,
       tempVisible: false,
       unidadLocal: 'C',
       stats:       null,
@@ -140,7 +131,10 @@ export default {
   },
 
   computed: {
-    // Prevalece la preferencia del store cuando está autenticado
+    lugar() {
+      return this.$store.getters.lugarPorId(this.$route.params.id)
+    },
+
     unidadActiva() {
       return this.isAuthenticated ? this.unidadStore : this.unidadLocal
     },
@@ -151,12 +145,7 @@ export default {
 
     estiloTemp() {
       const c = COLOR_MAP[this.lugar?.modifier] ?? COLOR_MAP.mild
-      return {
-        background: c.bg,
-        color:      c.color,
-        border:     `1px solid ${c.border}`,
-        maxWidth:   '300px',
-      }
+      return { background: c.bg, color: c.color, border: `1px solid ${c.border}`, maxWidth: '300px' }
     },
 
     tempActualFormateada() {
@@ -164,55 +153,35 @@ export default {
       const t = this.lugar.tempActual
       const u = this.unidadActiva
       if (u === 'F') return formatTempF(t)
-      if (u === 'K') {
-        const k = Math.round(t + 273.15)
-        return `${k} K`
-      }
+      if (u === 'K') return formatTempK(t)
       return formatTemp(t)
     },
+  },
+
+  watch: {
+    // Recalcula stats cuando cambia el pronóstico (ej: Tierra carga después)
+    'lugar.pronosticoSemanal': {
+      handler(val) {
+        if (val?.length) {
+          this.stats   = calcularEstadisticas(val)
+          this.alertas = generarAlertas(this.stats)
+        }
+      },
+      immediate: true,
+    },
+  },
+
+  created() {
+    if (this.lugar) {
+      document.title = `${this.lugar.nombre} — Exploración Espacial`
+      this.$store.commit('SET_LUGAR_SELECCIONADO', this.lugar)
+    }
   },
 
   methods: {
     setUnidad(u) {
       if (!this.isAuthenticated) this.unidadLocal = u
     },
-  },
-
-  async created() {
-    const id = this.$route.params.id
-    const lugares = LUGARES_DATA.map(d => ({ ...d, pronosticoSemanal: [...d.pronosticoSemanal] }))
-    let lugar = lugares.find(l => l.id === id) ?? null
-
-    if (lugar?.usaApiReal && !lugar.pronosticoSemanal.length) {
-      try {
-        const pronostico = await new ApiClient().obtenerPronosticoTierra()
-        lugar.pronosticoSemanal = pronostico
-        if (pronostico.length) {
-          lugar.tempActual   = Math.round((pronostico[0].min + pronostico[0].max) / 2)
-          lugar.estadoActual = pronostico[0].estado
-        }
-      } catch {
-        lugar.pronosticoSemanal = [
-          { dia: 'Lunes',     min: 10, max: 22, estado: 'Soleado'  },
-          { dia: 'Martes',    min: 12, max: 24, estado: 'Soleado'  },
-          { dia: 'Miércoles', min:  8, max: 18, estado: 'Lluvioso' },
-          { dia: 'Jueves',    min:  9, max: 17, estado: 'Nublado'  },
-          { dia: 'Viernes',   min: 11, max: 20, estado: 'Soleado'  },
-          { dia: 'Sábado',    min: 13, max: 23, estado: 'Soleado'  },
-          { dia: 'Domingo',   min:  7, max: 16, estado: 'Lluvioso' },
-        ]
-        lugar.tempActual   = 15
-        lugar.estadoActual = 'Nublado'
-      }
-    }
-
-    this.lugar = lugar
-    if (lugar) {
-      document.title = `${lugar.nombre} — Exploración Espacial`
-      this.stats     = calcularEstadisticas(lugar.pronosticoSemanal)
-      this.alertas   = generarAlertas(this.stats)
-    }
-    this.cargando = false
   },
 }
 </script>
